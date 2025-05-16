@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
+using Ambev.DeveloperEvaluation.ORM.Seeders;
 using System.Reflection;
 
 namespace Ambev.DeveloperEvaluation.ORM;
@@ -19,6 +20,7 @@ public class DefaultContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+        modelBuilder.SeedProducts();
         base.OnModelCreating(modelBuilder);
     }
 }

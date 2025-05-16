@@ -26,7 +26,7 @@ public class CreateSaleValidator : AbstractValidator<CreateSaleCommand>
     }
 }
 
-public class CreateSaleItemValidator : AbstractValidator<CreateSaleItemDto>
+public class CreateSaleItemValidator : AbstractValidator<SaleItemCommand>
 {
     public CreateSaleItemValidator()
     {

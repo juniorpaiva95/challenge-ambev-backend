@@ -1,3 +1,4 @@
+using Ambev.DeveloperEvaluation.Application.Sale.CreateSale;
 using Ambev.DeveloperEvaluation.Domain.Entities;
 
 namespace Ambev.DeveloperEvaluation.WebApi.Features.Sale.CreateSale;
@@ -45,7 +46,7 @@ public class CreateSaleResponse
     /// <summary>
     /// The items included in this sale
     /// </summary>
-    public List<SaleItem> Items { get; set; } = new();
+    public List<SaleItemResponse> Items { get; set; } = new();
 
     /// <summary>
     /// The created at date of the sale
@@ -56,4 +57,14 @@ public class CreateSaleResponse
     /// The updated at date of the sale
     /// </summary>
     public DateTime? UpdatedAt { get; set; }
+}
+
+public class SaleItemResponse
+{
+    public Guid ProductId { get; set; }
+    public int Quantity { get; set; }
+    public decimal UnitPrice { get; set; }
+    public decimal Discount { get; set; }
+    public decimal TotalAmount { get; set; }
+    public bool IsCancelled { get; set; }
 }

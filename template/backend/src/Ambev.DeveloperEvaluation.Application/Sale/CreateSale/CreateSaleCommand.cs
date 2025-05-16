@@ -1,4 +1,3 @@
-using Ambev.DeveloperEvaluation.Common.Validation;
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -14,25 +13,12 @@ public class CreateSaleCommand : IRequest<CreateSaleResult>
     public DateTime SaleDate { get; set; }
     public Guid CustomerId { get; set; }
     public string Branch { get; set; } = string.Empty;
-    public List<CreateSaleItemDto> Items { get; set; } = new();
-
-    public ValidationResultDetail Validate()
-    {
-        var validator = new CreateSaleValidator();
-        var result = validator.Validate(this);
-        return new ValidationResultDetail
-        {
-            IsValid = result.IsValid,
-            Errors = result.Errors.Select(o => (ValidationErrorDetail)o)
-        };
-    }
+    public List<SaleItemCommand> Items { get; set; } = new();
 }
 
-public class CreateSaleItemDto
+public class SaleItemCommand
 {
     public Guid ProductId { get; set; }
     public int Quantity { get; set; }
     public decimal UnitPrice { get; set; }
-    public decimal Discount { get; set; }
-    public decimal TotalAmount { get; set; }
 } 

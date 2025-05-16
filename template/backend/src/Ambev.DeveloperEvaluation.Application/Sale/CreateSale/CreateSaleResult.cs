@@ -15,10 +15,10 @@ public class CreateSaleResult
     public string Branch { get; set; } = string.Empty;
     public decimal TotalAmount { get; set; }
     public bool IsCancelled { get; set; }
-    public List<CreateSaleItemResultDto> Items { get; set; } = new();
+    public List<SaleItemResult> Items { get; set; } = new();
 }
 
-public class CreateSaleItemResultDto
+public class SaleItemResult
 {
     public Guid ProductId { get; set; }
     public int Quantity { get; set; }

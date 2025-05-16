@@ -47,7 +47,7 @@ public class CreateSaleHandler : IRequestHandler<CreateSaleCommand, CreateSaleRe
 
         // Mapear para resultado
         var result = _mapper.Map<CreateSaleResult>(created);
-        result.Items = sale.Items.Select(i => new CreateSaleItemResultDto
+        result.Items = sale.Items.Select(i => new SaleItemResult
         {
             ProductId = i.ProductId,
             Quantity = i.Quantity,
