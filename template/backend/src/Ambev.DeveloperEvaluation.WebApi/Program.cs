@@ -29,9 +29,11 @@ public class Program
             builder.AddBasicHealthChecks();
             builder.Services.AddSwaggerGen();
 
+            Console.WriteLine(builder.Configuration.GetConnectionString("AmbevDatabase"));
+
             builder.Services.AddDbContext<DefaultContext>(options =>
                 options.UseNpgsql(
-                    builder.Configuration.GetConnectionString("DefaultConnection"),
+                    builder.Configuration.GetConnectionString("AmbevDatabase"),
                     b => b.MigrationsAssembly("Ambev.DeveloperEvaluation.ORM")
                 )
             );

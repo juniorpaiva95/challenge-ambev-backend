@@ -50,6 +50,15 @@ public class CreateUserCommand : IRequest<CreateUserResult>
     /// </summary>
     public UserRole Role { get; set; }
 
+    /// <summary>
+    /// Gets or sets the created at date of the user.
+    /// </summary>
+    public DateTime CreatedAt { get; set; }
+
+    /// <summary>
+    /// Gets or sets the updated at date of the user.
+    /// </summary>
+    public DateTime? UpdatedAt { get; set; }
 
     public ValidationResultDetail Validate()
     {
