@@ -5,6 +5,7 @@ using Ambev.DeveloperEvaluation.WebApi.Common;
 using Ambev.DeveloperEvaluation.WebApi.Features.Sale.CreateSale;
 using Ambev.DeveloperEvaluation.Application.Sale.CreateSale;
 using Ambev.DeveloperEvaluation.Application.Sale.CancelSale;
+using Ambev.DeveloperEvaluation.Application.Sale.ListSales;
 
 namespace Ambev.DeveloperEvaluation.WebApi.Features.Sale;
 
@@ -67,5 +68,16 @@ public class SaleController : BaseController
         if (!result)
             return NotFound($"Sale {saleId} not found.");
         return Ok(new ApiResponse { Success = true, Message = $"Sale {saleId} canceled successfully." });
+    }
+
+    [HttpGet]
+    [ProducesResponseType(typeof(PaginatedResponse<SaleDto>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> ListSales([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, [FromQuery] Guid? customerId = null, [FromQuery] Guid? productId = null, CancellationToken cancellationToken = default)
+    {
+        var query = new ListSalesQuery(pageNumber, pageSize, customerId, productId);
+        var result = await _mediator.Send(query, cancellationToken);
+        var paginated = new PaginatedList<SaleDto>(result.Sales, result.TotalCount, result.CurrentPage, result.PageSize);
+        
+        return Ok(paginated);
     }
 }

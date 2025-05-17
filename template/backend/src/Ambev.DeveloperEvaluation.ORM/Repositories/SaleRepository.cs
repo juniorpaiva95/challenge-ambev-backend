@@ -50,4 +50,26 @@ public class SaleRepository : ISaleRepository
     {
         throw new NotImplementedException();
     }
+
+    public async Task<(IEnumerable<Sale> Sales, int TotalCount)> GetPagedAsync(int pageNumber, int pageSize, Guid? customerId = null, Guid? productId = null, CancellationToken cancellationToken = default)
+    {
+        var query = _context.Sales
+            .Include(s => s.Customer)
+            .Include(s => s.Items)
+                .ThenInclude(i => i.Product)
+            .AsQueryable();
+
+        if (customerId.HasValue)
+            query = query.Where(s => s.CustomerId == customerId.Value);
+        if (productId.HasValue)
+            query = query.Where(s => s.Items.Any(i => i.ProductId == productId.Value));
+
+        var totalCount = await query.CountAsync(cancellationToken);
+        var sales = await query
+            .OrderByDescending(s => s.SaleDate)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync(cancellationToken);
+        return (sales, totalCount);
+    }
 } 

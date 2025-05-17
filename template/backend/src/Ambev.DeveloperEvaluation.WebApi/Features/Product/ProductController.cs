@@ -52,6 +52,7 @@ public class ProductController : BaseController
         var result = await _mediator.Send(query, cancellationToken);
         var response = result.Select(_mapper.Map<GetProductsResponse>).ToList();
         var paginated = new PaginatedList<GetProductsResponse>(response, result.TotalCount, result.CurrentPage, result.PageSize);
-        return OkPaginated(paginated);
+
+        return Ok(paginated);
     }
 } 
