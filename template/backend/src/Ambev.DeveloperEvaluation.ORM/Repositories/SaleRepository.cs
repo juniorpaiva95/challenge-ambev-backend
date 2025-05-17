@@ -72,4 +72,17 @@ public class SaleRepository : ISaleRepository
             .ToListAsync(cancellationToken);
         return (sales, totalCount);
     }
+
+    public async Task<SaleItem?> GetItemByIdAsync(Guid itemId, CancellationToken cancellationToken = default)
+    {
+        return await _context.Set<SaleItem>()
+            .Include(i => i.Product)
+            .FirstOrDefaultAsync(i => i.Id == itemId, cancellationToken);
+    }
+
+    public async Task<bool> UpdateItemAsync(SaleItem item, CancellationToken cancellationToken = default)
+    {
+        _context.Set<SaleItem>().Update(item);
+        return await _context.SaveChangesAsync(cancellationToken) > 0;
+    }
 } 

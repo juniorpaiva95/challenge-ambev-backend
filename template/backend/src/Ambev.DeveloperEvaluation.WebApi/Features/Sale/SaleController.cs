@@ -77,7 +77,21 @@ public class SaleController : BaseController
         var query = new ListSalesQuery(pageNumber, pageSize, customerId, productId);
         var result = await _mediator.Send(query, cancellationToken);
         var paginated = new PaginatedList<SaleDto>(result.Sales, result.TotalCount, result.CurrentPage, result.PageSize);
-        
+
         return Ok(paginated);
+    }
+
+    [HttpPatch("{saleId}/CancelItem")]
+    [ProducesResponseType(typeof(ApiResponseWithData<Ambev.DeveloperEvaluation.Application.Sale.CancelSale.CancelSaleItemsResult>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> CancelSaleItems([FromRoute] Guid saleId, [FromBody] CancelSaleItemsRequest request, CancellationToken cancellationToken)
+    {
+        var command = new Ambev.DeveloperEvaluation.Application.Sale.CancelSale.CancelSaleItemsCommand(saleId, request.ItemIds);
+        var result = await _mediator.Send(command, cancellationToken);
+        return Ok(new ApiResponseWithData<Ambev.DeveloperEvaluation.Application.Sale.CancelSale.CancelSaleItemsResult>
+        {
+            Success = true,
+            Message = "Batch cancel operation completed.",
+            Data = result
+        });
     }
 }
