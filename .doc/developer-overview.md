@@ -1,5 +1,50 @@
 # Developer Overview - 16/05/2025
 
+## Business Rules Checklist & Implementation
+
+Below are the business rules from the challenge, with a checkmark (✔️) for each rule that is implemented, an explanation, and a code snippet showing how it is enforced:
+
+### ✔️ Purchases above 4 identical items have a 10% discount
+### ✔️ Purchases between 10 and 20 identical items have a 20% discount
+### ✔️ Purchases below 4 items cannot have a discount
+
+**How it's implemented:**
+The discount logic is handled in the `CreateSaleHandler` using the `CalculateDiscount` method:
+
+```csharp
+private decimal CalculateDiscount(int quantity)
+{
+    if (quantity < 4)
+        return 0m;
+    if (quantity >= 10 && quantity <= 20)
+        return 0.20m;
+    if (quantity >= 4)
+        return 0.10m;
+    return 0m;
+}
+```
+
+This method is called for each sale item when creating a sale, ensuring the correct discount is applied according to the quantity.
+
+---
+
+### ✔️ It's not possible to sell above 20 identical items
+
+**How it's implemented:**
+This rule is enforced by validation using FluentValidation in `CreateSaleItemValidator`:
+
+```csharp
+RuleFor(x => x.Quantity)
+    .GreaterThan(0)
+    .WithMessage("A quantidade deve ser maior que zero.")
+    .LessThanOrEqualTo(20)
+    .WithMessage("A quantidade máxima por item é 20.");
+```
+
+If a request tries to add more than 20 units of the same product, the API will return a validation error and will not process the sale.
+
+---
+
 ## Fluxo de Mapeamento (DTOs e Entidades)
 
 O projeto segue um padrão limpo e desacoplado para o fluxo de dados entre as camadas, utilizando o AutoMapper para conversão entre objetos. O fluxo é o seguinte:
