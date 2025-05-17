@@ -2,6 +2,13 @@
 
 `READ CAREFULLY`
 
+## Developer Notes & Observations
+
+For additional insights, implementation details, and personal notes about the project, see:
+- [Developer Overview & Implementation Notes](.doc/developer-overview.md)
+
+This document contains extra observations and explanations added by the developer regarding architectural decisions, exception handling, and other relevant implementation details.
+
 ## Instructions
 **The test below will have up to 7 calendar days to be delivered from the date of receipt of this manual.**
 
