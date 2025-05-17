@@ -85,3 +85,15 @@ Exemplo de uso:
 - Se uma venda não for encontrada, é lançada `SaleNotFoundException`.
 - Se uma venda já estiver cancelada, é lançada `SaleAlreadyCancelledException`.
 - Ambas são tratadas pelo middleware e retornam mensagens amigáveis ao cliente.
+
+---------------
+
+## Dados Iniciais (Seeders)
+
+O projeto conta com um esquema de seeders para popular o banco de dados com dados iniciais essenciais para testes e desenvolvimento. Os seeders são implementados como métodos de extensão do ModelBuilder e aplicados no método OnModelCreating do DbContext.
+
+Atualmente, existem seeders para:
+- **Produtos:** Popula a tabela de produtos com exemplos de cervejas, refrigerantes e outros itens do portfólio.
+- **Usuários:** Popula a tabela de usuários com três perfis genéricos (Administrador, Gerente e Cliente), cada um com e-mail, telefone, perfil e senha já hasheada.
+
+Esses seeders garantem que, ao rodar as migrations, o banco já estará pronto para uso com dados básicos, facilitando o desenvolvimento, testes e validação das regras de negócio.
