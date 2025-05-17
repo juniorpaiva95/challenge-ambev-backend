@@ -8,6 +8,12 @@ GET {{Ambev.DeveloperEvaluation.WebApi_HostAddress}}/api/product
 Accept: application/json
 
 ###
-POST {{Ambev.DeveloperEvaluation.WebApi_HostAddress}}/sales
+POST {{Ambev.DeveloperEvaluation.WebApi_HostAddress}}/api/v1/Sale
 Content-Type: application/json
+
+###
+POST {{Ambev.DeveloperEvaluation.WebApi_HostAddress}}/api/v1/Sale/Cancel
+Content-Type: application/json
+
+"26e236c9-a373-449a-b10b-bfdbdd8e445b"
 

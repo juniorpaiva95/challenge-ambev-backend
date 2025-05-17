@@ -29,4 +29,14 @@ A camada Application é responsável por:
 - **Desacoplamento:** WebApi não depende de Application, que não depende de Domain
 - **Facilidade de testes:** Cada camada pode ser testada isoladamente
 
----
+---------------
+### Exceções de Domínio e Tratamento Centralizado
+
+Para garantir um tratamento elegante e padronizado de erros de negócio, foi criada uma exceção base chamada `BusinessDomainException` no domínio. Todas as exceções de regras de negócio (ex: `SaleNotFoundException`, `SaleAlreadyCancelledException`) herdam dessa base.
+
+Essas exceções são capturadas de forma centralizada pelo middleware da WebApi, que retorna uma resposta amigável em JSON e o status HTTP apropriado (por padrão, 409 Conflict). Isso garante que regras de negócio sejam comunicadas de forma clara para o consumidor da API, sem vazar detalhes técnicos.
+
+Exemplo de uso:
+- Se uma venda não for encontrada, é lançada `SaleNotFoundException`.
+- Se uma venda já estiver cancelada, é lançada `SaleAlreadyCancelledException`.
+- Ambas são tratadas pelo middleware e retornam mensagens amigáveis ao cliente.

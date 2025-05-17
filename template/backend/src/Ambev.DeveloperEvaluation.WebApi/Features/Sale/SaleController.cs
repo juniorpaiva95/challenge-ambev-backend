@@ -4,6 +4,7 @@ using AutoMapper;
 using Ambev.DeveloperEvaluation.WebApi.Common;
 using Ambev.DeveloperEvaluation.WebApi.Features.Sale.CreateSale;
 using Ambev.DeveloperEvaluation.Application.Sale.CreateSale;
+using Ambev.DeveloperEvaluation.Application.Sale.CancelSale;
 
 namespace Ambev.DeveloperEvaluation.WebApi.Features.Sale;
 
@@ -54,5 +55,17 @@ public class SaleController : BaseController
             Message = "Sale created successfully",
             Data = _mapper.Map<CreateSaleResponse>(response)
         });
+    }
+
+    [HttpPost("Cancel")]
+    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> CancelSale([FromBody] Guid saleId, CancellationToken cancellationToken)
+    {
+        var command = new CancelSaleCommand(saleId);
+        var result = await _mediator.Send(command, cancellationToken);
+        if (!result)
+            return NotFound($"Sale {saleId} not found.");
+        return Ok(new ApiResponse { Success = true, Message = $"Sale {saleId} canceled successfully." });
     }
 }
