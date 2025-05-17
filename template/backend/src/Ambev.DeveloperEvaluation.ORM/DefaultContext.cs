@@ -21,6 +21,7 @@ public class DefaultContext : DbContext
     {
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         modelBuilder.SeedProducts();
+        modelBuilder.SeedUsers();
         base.OnModelCreating(modelBuilder);
     }
 }
