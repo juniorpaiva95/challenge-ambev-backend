@@ -4,3 +4,10 @@ GET {{Ambev.DeveloperEvaluation.WebApi_HostAddress}}/weatherforecast/
 Accept: application/json
 
 ###
+GET {{Ambev.DeveloperEvaluation.WebApi_HostAddress}}/api/product
+Accept: application/json
+
+###
+POST {{Ambev.DeveloperEvaluation.WebApi_HostAddress}}/sales
+Content-Type: application/json
+

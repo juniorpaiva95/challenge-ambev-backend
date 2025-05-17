@@ -6,18 +6,25 @@ using Ambev.DeveloperEvaluation.Domain.Repositories;
 using Ambev.DeveloperEvaluation.Domain.Entities;
 using System;
 using System.Linq;
+using Microsoft.Extensions.Logging;
 
 namespace Ambev.DeveloperEvaluation.Application.Sale.CreateSale;
 
 public class CreateSaleHandler : IRequestHandler<CreateSaleCommand, CreateSaleResult>
 {
     private readonly ISaleRepository _saleRepository;
+    private readonly IProductRepository _productRepository;
     private readonly IMapper _mapper;
+    private readonly ILogger<CreateSaleHandler> _logger;
+    private readonly IMediator _mediator;
 
-    public CreateSaleHandler(ISaleRepository saleRepository, IMapper mapper)
+    public CreateSaleHandler(ISaleRepository saleRepository, IProductRepository productRepository, IMapper mapper, ILogger<CreateSaleHandler> logger, IMediator mediator)
     {
         _saleRepository = saleRepository;
+        _productRepository = productRepository;
         _mapper = mapper;
+        _logger = logger;
+        _mediator = mediator;
     }
 
     public async Task<CreateSaleResult> Handle(CreateSaleCommand request, CancellationToken cancellationToken)
@@ -26,15 +33,29 @@ public class CreateSaleHandler : IRequestHandler<CreateSaleCommand, CreateSaleRe
         var sale = _mapper.Map<Domain.Entities.Sale>(request);
         sale.SaleDate = request.SaleDate == default ? DateTime.UtcNow : request.SaleDate;
         sale.IsCancelled = false;
+
+        // Buscar todos os produtos necessários de uma vez (opcional, para performance)
+        var productIds = request.Items.Select(i => i.ProductId).ToList();
+        var products = new Dictionary<Guid, Domain.Entities.Product>();
+        foreach (var productId in productIds)
+        {
+            var product = await _productRepository.GetByIdAsync(productId, cancellationToken);
+            if (product == null)
+                throw new Exception($"Produto {productId} não encontrado.");
+            products[productId] = product;
+        }
+
         sale.Items = request.Items.Select(item =>
         {
+            var product = products[item.ProductId];
+            var unitPrice = product.Price;
             var discount = CalculateDiscount(item.Quantity);
-            var total = item.Quantity * item.UnitPrice * (1 - discount);
+            var total = item.Quantity * unitPrice * (1 - discount);
             return new SaleItem
             {
                 ProductId = item.ProductId,
                 Quantity = item.Quantity,
-                UnitPrice = item.UnitPrice,
+                UnitPrice = unitPrice,
                 Discount = discount,
                 TotalAmount = total,
                 IsCancelled = false
@@ -44,6 +65,11 @@ public class CreateSaleHandler : IRequestHandler<CreateSaleCommand, CreateSaleRe
 
         // Salvar no repositório
         var created = await _saleRepository.CreateAsync(sale, cancellationToken);
+
+        // Disparar evento e logar
+        _logger.LogInformation("SaleCreatedEvent disparado para venda {SaleId}", created.Id);
+        var saleCreatedEvent = new Ambev.DeveloperEvaluation.Domain.Events.SaleCreatedEvent(created);
+        await _mediator.Publish(saleCreatedEvent, cancellationToken);
 
         // Mapear para resultado
         var result = _mapper.Map<CreateSaleResult>(created);

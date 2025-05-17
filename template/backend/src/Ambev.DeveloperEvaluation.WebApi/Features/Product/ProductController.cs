@@ -4,11 +4,12 @@ using AutoMapper;
 using Ambev.DeveloperEvaluation.WebApi.Common;
 using Ambev.DeveloperEvaluation.WebApi.Features.Product.CreateProduct;
 using Ambev.DeveloperEvaluation.Application.Product.CreateProduct;
+using Ambev.DeveloperEvaluation.WebApi.Features.GetProductList;
 
 namespace Ambev.DeveloperEvaluation.WebApi.Features.Product;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/v1/[controller]")]
 public class ProductController : BaseController
 {
     private readonly IMediator _mediator;
@@ -40,5 +41,17 @@ public class ProductController : BaseController
             Message = "Product created successfully",
             Data = _mapper.Map<CreateProductResponse>(response)
         });
+    }
+
+    [HttpGet]
+    [ProducesResponseType(typeof(PaginatedResponse<GetProductsResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> GetProducts([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, CancellationToken cancellationToken = default)
+    {
+        var query = new Application.Product.GetProductList.GetAllProductsQuery(pageNumber, pageSize);
+        var result = await _mediator.Send(query, cancellationToken);
+        var response = result.Select(_mapper.Map<GetProductsResponse>).ToList();
+        var paginated = new PaginatedList<GetProductsResponse>(response, result.TotalCount, result.CurrentPage, result.PageSize);
+        return OkPaginated(paginated);
     }
 } 

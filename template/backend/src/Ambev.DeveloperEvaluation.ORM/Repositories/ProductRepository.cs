@@ -43,4 +43,14 @@ public class ProductRepository : IProductRepository
         await _context.SaveChangesAsync(cancellationToken);
         return true;
     }
+
+    public async Task<List<Product>> GetAllAsync(CancellationToken cancellationToken = default)
+    {
+        return await _context.Products.ToListAsync(cancellationToken);
+    }
+
+    public Task<IQueryable<Product>> GetQueryableAsync()
+    {
+        return Task.FromResult(_context.Products.AsQueryable());
+    }
 } 
