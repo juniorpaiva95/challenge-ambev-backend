@@ -19,6 +19,7 @@ public class Program
         try
         {
             Log.Information("Starting web application");
+            Console.WriteLine("Starting web application");
 
             WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
             builder.AddDefaultLogging();
@@ -63,7 +64,7 @@ public class Program
                 app.UseSwaggerUI();
             }
 
-            app.UseHttpsRedirection();
+            // app.UseHttpsRedirection();
 
             app.UseAuthentication();
             app.UseAuthorization();
@@ -72,11 +73,19 @@ public class Program
 
             app.MapControllers();
 
+            // Executa as migrations automaticamente ao iniciar
+            using (var scope = app.Services.CreateScope())
+            {
+                var db = scope.ServiceProvider.GetRequiredService<DefaultContext>();
+                db.Database.Migrate();
+            }
+
             app.Run();
         }
         catch (Exception ex)
         {
             Log.Fatal(ex, "Application terminated unexpectedly");
+            Console.WriteLine("Application terminated unexpectedly " + ex.ToString());
         }
         finally
         {

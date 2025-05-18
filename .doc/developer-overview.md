@@ -97,3 +97,39 @@ Atualmente, existem seeders para:
 - **Usuários:** Popula a tabela de usuários com três perfis genéricos (Administrador, Gerente e Cliente), cada um com e-mail, telefone, perfil e senha já hasheada.
 
 Esses seeders garantem que, ao rodar as migrations, o banco já estará pronto para uso com dados básicos, facilitando o desenvolvimento, testes e validação das regras de negócio.
+
+---------------
+
+## Dificuldade ao Rodar o WebAPI no Docker e Solução
+
+Ao tentar rodar o serviço WebAPI pela primeira vez dentro do Docker, enfrentei uma dificuldade importante: a aplicação encerrava imediatamente com exit code 0, sem logs claros de erro. Após debugar, identifiquei que o problema estava relacionado à configuração de HTTPS no ambiente Docker. O ASP.NET tentava configurar um endpoint HTTPS, mas não encontrava um certificado de desenvolvimento válido dentro do container, resultando na exceção:
+
+```
+System.InvalidOperationException: Unable to configure HTTPS endpoint. No server certificate was specified, and the default developer certificate could not be found or is out of date.
+```
+
+### Passos para resolver:
+- Remover a linha `app.UseHttpsRedirection();` do `Program.cs` para não forçar redirecionamento HTTPS no Docker.
+- Remover a variável de ambiente `ASPNETCORE_HTTPS_PORTS` do `docker-compose.yml` para evitar que o Kestrel tente subir um endpoint HTTPS.
+- Garantir que a aplicação rode apenas em HTTP no ambiente Docker, utilizando apenas a porta 8080.
+- Adicionar logs detalhados no bloco de exceção do `Program.cs` para capturar e exibir o erro real.
+
+Essas ações permitiram que a aplicação subisse corretamente no Docker, facilitando o desenvolvimento e testes locais.
+
+### Execução automática das migrations
+Outra melhoria importante foi a configuração para que as migrations do Entity Framework Core sejam executadas automaticamente na inicialização do serviço. Isso garante que o banco de dados esteja sempre atualizado com o modelo da aplicação, sem necessidade de rodar comandos manuais.
+
+Trecho de código adicionado ao `Program.cs`:
+
+```csharp
+// Executa as migrations automaticamente ao iniciar
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<DefaultContext>();
+    db.Database.Migrate();
+}
+```
+
+Com isso, o ambiente Docker fica mais robusto e fácil de usar para novos desenvolvedores, reduzindo o tempo de setup e evitando erros comuns de configuração.
+
+---------------
