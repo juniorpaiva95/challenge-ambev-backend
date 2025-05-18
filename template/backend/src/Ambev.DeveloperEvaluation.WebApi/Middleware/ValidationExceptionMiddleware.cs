@@ -21,53 +21,39 @@ namespace Ambev.DeveloperEvaluation.WebApi.Middleware
             {
                 await _next(context);
             }
-            catch (ValidationException ex)
+            catch (Exception ex)
             {
-                await HandleValidationExceptionAsync(context, ex);
-            }
-            catch (BusinessDomainException ex)
-            {
-                await HandleBusinessDomainExceptionAsync(context, ex);
+                await HandleExceptionAsync(context, ex);
             }
         }
 
-        private static Task HandleValidationExceptionAsync(HttpContext context, ValidationException exception)
+        private static Task HandleExceptionAsync(HttpContext context, Exception exception)
         {
             context.Response.ContentType = "application/json";
-            context.Response.StatusCode = StatusCodes.Status400BadRequest;
+            var response = new ApiResponse { Success = false };
 
-            var response = new ApiResponse
+            switch (exception)
             {
-                Success = false,
-                Message = "Validation Failed",
-                Errors = exception.Errors
-                    .Select(error => (ValidationErrorDetail)error)
-            };
+                case ValidationException validationEx:
+                    context.Response.StatusCode = StatusCodes.Status400BadRequest;
+                    response.Message = "Validation Failed";
+                    response.Errors = validationEx.Errors.Select(error => (ValidationErrorDetail)error);
+                    break;
+                case BusinessDomainException businessEx:
+                    context.Response.StatusCode = StatusCodes.Status409Conflict;
+                    response.Message = businessEx.Message;
+                    break;
+                case System.UnauthorizedAccessException unauthorizedEx:
+                    context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                    response.Message = unauthorizedEx.Message;
+                    break;
+                default:
+                    context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+                    response.Message = "An unexpected error occurred";
+                    break;
+            }
 
-            var jsonOptions = new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-            };
-
-            return context.Response.WriteAsync(JsonSerializer.Serialize(response, jsonOptions));
-        }
-
-        private static Task HandleBusinessDomainExceptionAsync(HttpContext context, BusinessDomainException exception)
-        {
-            context.Response.ContentType = "application/json";
-            context.Response.StatusCode = StatusCodes.Status409Conflict;
-
-            var response = new ApiResponse
-            {
-                Success = false,
-                Message = exception.Message
-            };
-
-            var jsonOptions = new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-            };
-
+            var jsonOptions = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
             return context.Response.WriteAsync(JsonSerializer.Serialize(response, jsonOptions));
         }
     }

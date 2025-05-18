@@ -17,7 +17,7 @@ public static class UserSeeder
                 Username = "Administrador",
                 Email = "admin@ambev.com",
                 Phone = "(11) 99999-0001",
-                Password = "$2a$11$w8QwQn6QwQn6QwQn6QwQnOQwQn6QwQn6QwQn6QwQn6QwQn6QwQn6", // hash fictício
+                Password = "$2a$12$CzZ2YbJOfzXOVLDpuzHtdu.V9IQPOR260WZ3OjzgSruAqKH5aXSu6", // hash fictício
                 Role = UserRole.Admin,
                 Status = UserStatus.Active,
                 CreatedAt = new DateTime(2024, 1, 1, 12, 0, 0, DateTimeKind.Utc)
@@ -28,7 +28,7 @@ public static class UserSeeder
                 Username = "Gerente",
                 Email = "manager@ambev.com",
                 Phone = "(11) 99999-0002",
-                Password = "$2a$11$w8QwQn6QwQn6QwQn6QwQnOQwQn6QwQn6QwQn6QwQn6QwQn6QwQn6", // hash fictício
+                Password = "$2a$12$gnxx5pVxZFK6z/i6VF/V4eXYoeBQregbAX/5BXgEnEVVdlqJMmgc6", // hash fictício
                 Role = UserRole.Manager,
                 Status = UserStatus.Active,
                 CreatedAt = new DateTime(2024, 1, 2, 12, 0, 0, DateTimeKind.Utc)
@@ -39,7 +39,7 @@ public static class UserSeeder
                 Username = "Cliente",
                 Email = "customer@ambev.com",
                 Phone = "(11) 99999-0003",
-                Password = "$2a$11$w8QwQn6QwQn6QwQn6QwQnOQwQn6QwQn6QwQn6QwQn6QwQn6QwQn6", // hash fictício
+                Password = "$2a$12$9iVWT7nJ/y6Y4ZTZ/rqWQeq/6A0nzW1e0EWoieYDadr46UFk.h2JC", // hash fictício
                 Role = UserRole.Customer,
                 Status = UserStatus.Active,
                 CreatedAt = new DateTime(2024, 1, 3, 12, 0, 0, DateTimeKind.Utc)

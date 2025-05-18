@@ -36,7 +36,7 @@ public class YourDbContextFactory : IDesignTimeDbContextFactory<DefaultContext>
             .Build();
 
         var builder = new DbContextOptionsBuilder<DefaultContext>();
-        var connectionString = configuration.GetConnectionString("AmbevDatabase");
+        var connectionString = configuration.GetConnectionString("DefaultConnection");
 
         builder.UseNpgsql(
                connectionString,
