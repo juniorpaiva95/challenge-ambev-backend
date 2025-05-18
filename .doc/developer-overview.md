@@ -1,12 +1,88 @@
 # Visão Geral do Desenvolvedor - 16/05/2025
+Este documento fornece uma visão geral abrangente do projeto, incluindo sua estrutura, configuração e instruções de execução.
+
+O documento aborda aspectos técnicos essenciais como:
+- Requisitos do ambiente de desenvolvimento
+- Opções de execução (Docker e local)
+- Configurações de banco de dados
+- Apontamentos e explicação técnica de algumas soluções
+
+# Instruções de Setup e Execução do Projeto
+
+## Requisitos
+- **.NET 8 SDK** (para rodar localmente)
+- **Docker e Docker Compose** (para rodar via containers)
+- **Banco de Dados:** PostgreSQL (pode ser via Docker ou local)
+
+---
+
+## Como rodar o projeto com Docker (recomendado)
+
+1. **Clone o repositório:**
+   ```sh
+   git clone https://github.com/juniorpaiva95/challenge-ambev-backend.git
+   cd challenge-ambev-backend/template/backend
+   ```
+2. **Suba os containers:**
+   ```sh
+   docker-compose up --build
+   ```
+   Isso irá:
+   - Subir a WebAPI já pronta para uso em http://localhost:8080
+   - Subir o banco PostgreSQL, MongoDB e Redis já configurados
+   - Executar as migrations automaticamente
+
+3. **Acesse a API:**
+   - Swagger: http://localhost:8080/swagger/index.html
+
+---
+
+## Como rodar o projeto localmente (sem Docker)
+
+1. **Configure o banco de dados local:**
+   - Instale o PostgreSQL localmente
+   - Crie um banco chamado `developer_evaluation` com usuário `developer` e senha `ev@luAt10n`
+
+2. **Configure a string de conexão:**
+   - No arquivo `appsettings.Development.json` da WebAPI e da ORM, há duas opções de string de conexão:
+     - **Default (Docker):** já aponta para o serviço do Docker Compose
+     - **Local:** aponta para `localhost`
+   - Para rodar localmente, **copie o conteúdo da string de conexão `LocalDatabase` e cole no lugar da `DefaultConnection`** desse modo não precisará alterar a key nas soluções da WebApi (em `Program.cs`) e na solução ORM (em `DefaultContext.cs`).
+
+   Exemplo:
+   ```json
+   "ConnectionStrings": {
+     "DefaultConnection": "Host=ambev_developer_evaluation_database;Port=5432;Database=developer_evaluation;Username=developer;Password=ev@luAt10n",
+    "LocalDatabase": "Host=localhost;Port=5432;Database=developer_evaluation;Username=developer;Password=ev@luAt10n"
+   }
+   ```
+
+3. **Rode as migrations:**
+    - **<span style="color: red">Não é necessário</span>**, pois ao rodar tanto local quanto no docker as migrations estão automatizadas para executar assim que a aplicação sobe.
+   ```sh
+   dotnet ef database update --project Ambev.DeveloperEvaluation.ORM/ --startup-project Ambev.DeveloperEvaluation.WebApi/
+   ```
+
+4. **Rode a WebAPI:**
+   ```sh
+   dotnet run --project src/Ambev.DeveloperEvaluation.WebApi
+   ```
+
+---
+
+## Observações
+- O projeto executa as migrations automaticamente ao iniciar (tanto local quanto no Docker).
+- Os dados iniciais (seed) são aplicados automaticamente.
+
+---
 
 ## Checklist de Regras de Negócio & Implementação
 
-Abaixo estão as regras de negócio do desafio, com um check (✔️) para cada regra implementada, uma explicação e um trecho de código mostrando como ela é aplicada:
+Abaixo estão as regras de negócio do desafio, com um check (✅) para cada regra implementada, uma explicação e um trecho de código mostrando como ela é aplicada:
 
-### ✔️ Compras acima de 4 itens idênticos têm 10% de desconto
-### ✔️ Compras entre 10 e 20 itens idênticos têm 20% de desconto
-### ✔️ Compras abaixo de 4 itens não podem ter desconto
+### ✅ Compras acima de 4 itens idênticos têm 10% de desconto
+### ✅ Compras entre 10 e 20 itens idênticos têm 20% de desconto
+### ✅ Compras abaixo de 4 itens não podem ter desconto
 
 **Como está implementado:**
 A lógica de desconto é tratada no `CreateSaleHandler` usando o método `CalculateDiscount`:
@@ -28,7 +104,7 @@ Esse método é chamado para cada item da venda ao criar uma venda, garantindo q
 
 ---
 
-### ✔️ Não é possível vender mais de 20 itens idênticos
+### ✅ Não é possível vender mais de 20 itens idênticos
 
 **Como está implementado:**
 Essa regra é aplicada por validação usando FluentValidation em `CreateSaleItemValidator`:
