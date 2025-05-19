@@ -85,22 +85,13 @@ Abaixo estão as regras de negócio do desafio, com um check (✅) para cada reg
 ### ✅ Compras abaixo de 4 itens não podem ter desconto
 
 **Como está implementado:**
-A lógica de desconto é tratada no `CreateSaleHandler` usando o método `CalculateDiscount`:
+A lógica de desconto é centralizada na classe `DiscountCalculator` em `Domain/Common`:
 
 ```csharp
-private decimal CalculateDiscount(int quantity)
-{
-    if (quantity < 4)
-        return 0m;
-    if (quantity >= 10 && quantity <= 20)
-        return 0.20m;
-    if (quantity >= 4)
-        return 0.10m;
-    return 0m;
-}
+var discount = DiscountCalculator.CalculateDiscount(quantity);
 ```
 
-Esse método é chamado para cada item da venda ao criar uma venda, garantindo que o desconto correto seja aplicado de acordo com a quantidade.
+Essa classe é utilizada tanto na criação quanto na atualização de vendas, garantindo que o desconto correto seja aplicado de acordo com a quantidade, de forma consistente em toda a aplicação.
 
 ---
 
@@ -209,3 +200,44 @@ using (var scope = app.Services.CreateScope())
 Com isso, o ambiente Docker fica mais robusto e fácil de usar para novos desenvolvedores, reduzindo o tempo de setup e evitando erros comuns de configuração.
 
 ---------------
+
+# Melhorias Recentes - 19/05
+
+## Centralização da Regra de Desconto
+- Foi criada a classe `DiscountCalculator` em `Domain/Common`, responsável por calcular o desconto aplicado em cada item da venda.
+- Agora, tanto a criação quanto a atualização de vendas utilizam essa classe, garantindo consistência e facilitando a manutenção da regra de negócio.
+- Exemplo de uso:
+```csharp
+var discount = DiscountCalculator.CalculateDiscount(quantity);
+```
+- **Benefício:** Qualquer alteração na regra de desconto é feita em um único lugar e reflete em toda a aplicação.
+
+## Enriquecimento das Exceções de Validação
+- A resposta de erro de validação foi aprimorada para retornar informações detalhadas sobre cada falha de validação.
+- Agora, cada erro inclui:
+  - `error`: Código do erro de validação
+  - `detail`: Mensagem detalhada do erro
+  - `propertyName`: Nome do campo que falhou
+  - `attemptedValue`: Valor informado que causou o erro
+  - `errorCode`: Código interno do tipo de erro
+  - `severity`: Severidade do erro (ex: Error, Warning)
+- Exemplo de resposta:
+```json
+{
+  "success": false,
+  "message": "Validation Failed",
+  "errors": [
+    {
+      "error": "LessThanOrEqualValidator",
+      "detail": "A quantidade deve estar entre 1 e 20 itens",
+      "propertyName": "Items[0].Quantity",
+      "attemptedValue": 25,
+      "errorCode": "LessThanOrEqualValidator",
+      "severity": "Error"
+    }
+  ]
+}
+```
+- **Benefício:** Facilita o diagnóstico de erros pelo consumidor da API e melhora a experiência de integração.
+
+---

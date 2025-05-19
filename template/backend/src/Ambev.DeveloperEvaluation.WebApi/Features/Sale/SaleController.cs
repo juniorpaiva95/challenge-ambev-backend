@@ -6,6 +6,7 @@ using Ambev.DeveloperEvaluation.WebApi.Features.Sale.CreateSale;
 using Ambev.DeveloperEvaluation.Application.Sale.CreateSale;
 using Ambev.DeveloperEvaluation.Application.Sale.CancelSale;
 using Ambev.DeveloperEvaluation.Application.Sale.ListSales;
+using Ambev.DeveloperEvaluation.Application.Sale;
 
 namespace Ambev.DeveloperEvaluation.WebApi.Features.Sale;
 
@@ -93,5 +94,18 @@ public class SaleController : BaseController
             Message = "Batch cancel operation completed.",
             Data = result
         });
+    }
+
+    [HttpPatch("{saleId}/Update")]
+    [ProducesResponseType(typeof(ApiResponseWithData<UpdateSaleResult>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> UpdateSale([FromRoute] Guid saleId, [FromBody] UpdateSaleRequest request, CancellationToken cancellationToken)
+    {
+        var command = _mapper.Map<UpdateSaleCommand>(request);
+        command.SaleId = saleId;
+        var result = await _mediator.Send(command, cancellationToken);
+        if (!result.Success)
+            return BadRequest(new ApiResponse { Success = false, Message = result.Message });
+        return Ok<UpdateSaleResult>(result);
     }
 }

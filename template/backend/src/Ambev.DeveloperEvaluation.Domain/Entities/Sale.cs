@@ -7,14 +7,14 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities;
 
 public class Sale : BaseEntity
 {
-    public string SaleNumber { get; set; }
+    public string SaleNumber { get; set; } = string.Empty;
     public DateTime SaleDate { get; set; }
     public Guid CustomerId { get; set; }
     public User Customer { get; set; }
     public decimal TotalAmount { get; set; }
-    public string Branch { get; set; }
+    public string Branch { get; set; } = string.Empty;
     public bool IsCancelled { get; set; }
-    public List<SaleItem> Items { get; set; }
+    public List<SaleItem> Items { get; set; } = new List<SaleItem>();
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
 

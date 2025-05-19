@@ -7,6 +7,9 @@ using Ambev.DeveloperEvaluation.Domain.Entities;
 using System;
 using System.Linq;
 using Microsoft.Extensions.Logging;
+using Ambev.DeveloperEvaluation.Domain.Exceptions;
+using Ambev.DeveloperEvaluation.Domain.Common;
+using FluentValidation;
 
 namespace Ambev.DeveloperEvaluation.Application.Sale.CreateSale;
 
@@ -34,14 +37,14 @@ public class CreateSaleHandler : IRequestHandler<CreateSaleCommand, CreateSaleRe
         sale.SaleDate = request.SaleDate == default ? DateTime.UtcNow : request.SaleDate;
         sale.IsCancelled = false;
 
-        // Buscar todos os produtos necessários de uma vez (opcional, para performance)
+        // Buscar todos os produtos necessários
         var productIds = request.Items.Select(i => i.ProductId).ToList();
         var products = new Dictionary<Guid, Domain.Entities.Product>();
         foreach (var productId in productIds)
         {
             var product = await _productRepository.GetByIdAsync(productId, cancellationToken);
             if (product == null)
-                throw new Exception($"Produto {productId} não encontrado.");
+                throw new NotFoundException($"Produto {productId}");
             products[productId] = product;
         }
 
@@ -49,7 +52,7 @@ public class CreateSaleHandler : IRequestHandler<CreateSaleCommand, CreateSaleRe
         {
             var product = products[item.ProductId];
             var unitPrice = product.Price;
-            var discount = CalculateDiscount(item.Quantity);
+            var discount = DiscountCalculator.CalculateDiscount(item.Quantity);
             var total = item.Quantity * unitPrice * (1 - discount);
             return new SaleItem
             {
@@ -63,6 +66,15 @@ public class CreateSaleHandler : IRequestHandler<CreateSaleCommand, CreateSaleRe
         }).ToList();
         sale.TotalAmount = sale.Items.Sum(i => i.TotalAmount);
 
+        // Validação de domínio
+        var validation = sale.Validate();
+        if (!validation.IsValid)
+        {
+            throw new ValidationException(validation.Errors.Select(e =>
+                new FluentValidation.Results.ValidationFailure(e.PropertyName, e.Detail)
+            ));
+        }
+
         // Salvar no repositório
         var created = await _saleRepository.CreateAsync(sale, cancellationToken);
 
@@ -73,26 +85,15 @@ public class CreateSaleHandler : IRequestHandler<CreateSaleCommand, CreateSaleRe
 
         // Mapear para resultado
         var result = _mapper.Map<CreateSaleResult>(created);
-        result.Items = sale.Items.Select(i => new SaleItemResult
+        result.Items = sale.Items.Select(saleItem => new SaleItemResult
         {
-            ProductId = i.ProductId,
-            Quantity = i.Quantity,
-            UnitPrice = i.UnitPrice,
-            Discount = i.Discount,
-            TotalAmount = i.TotalAmount,
-            IsCancelled = i.IsCancelled
+            ProductId = saleItem.ProductId,
+            Quantity = saleItem.Quantity,
+            UnitPrice = saleItem.UnitPrice,
+            Discount = saleItem.Discount,
+            TotalAmount = saleItem.TotalAmount,
+            IsCancelled = saleItem.IsCancelled
         }).ToList();
         return result;
-    }
-
-    private decimal CalculateDiscount(int quantity)
-    {
-        if (quantity < 4)
-            return 0m;
-        if (quantity >= 10 && quantity <= 20)
-            return 0.20m;
-        if (quantity >= 4)
-            return 0.10m;
-        return 0m;
     }
 } 

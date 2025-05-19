@@ -39,10 +39,15 @@ namespace Ambev.DeveloperEvaluation.WebApi.Middleware
                     response.Message = "Validation Failed";
                     response.Errors = validationEx.Errors.Select(error => (ValidationErrorDetail)error);
                     break;
+                case NotFoundException notFoundEx:
+                    context.Response.StatusCode = StatusCodes.Status404NotFound;
+                    response.Message = notFoundEx.Message;
+                    break;
                 case BusinessDomainException businessEx:
                     context.Response.StatusCode = StatusCodes.Status409Conflict;
                     response.Message = businessEx.Message;
                     break;
+                
                 case System.UnauthorizedAccessException unauthorizedEx:
                     context.Response.StatusCode = StatusCodes.Status401Unauthorized;
                     response.Message = unauthorizedEx.Message;
