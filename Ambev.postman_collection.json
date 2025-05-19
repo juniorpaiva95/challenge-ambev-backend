@@ -1,0 +1,100 @@
+{
+	"info": {
+		"_postman_id": "75b78825-35ea-4f6e-a535-f4d78c9b48bd",
+		"name": "Ambev",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "1409744"
+	},
+	"item": [
+		{
+			"name": "POST User",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"username\": \"Joao\",\r\n  \"password\": \"123456Jj!\",\r\n  \"phone\": \"83999962098\",\r\n  \"email\": \"joao@teste.com\",\r\n  \"status\": 1,\r\n  \"role\": 1\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:5119/api/v1/Users",
+					"host": [
+						"localhost"
+					],
+					"port": "5119",
+					"path": [
+						"api",
+						"v1",
+						"Users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST Sale",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"saleNumber\": \"Venda2\",\r\n  \"saleDate\": \"2025-05-16T21:13:20.849Z\",\r\n  \"customerId\": \"3a3fec27-caff-4cf0-a5b1-391d5c659959\",\r\n  \"branch\": \"Filial - Mangabeira\",\r\n  \"items\": [\r\n    {\r\n      \"productId\": \"2f36cd3a-0b4c-496a-92a6-41391307be47\", //Skol Beats\r\n      \"quantity\": 15\r\n    },\r\n    {\r\n        \"productId\": \"313dad6b-2857-4e05-a767-610ed9b5c14f\",\r\n        \"quantity\": 10\r\n    }\r\n  ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:5119/api/v1/Sale",
+					"host": [
+						"localhost"
+					],
+					"port": "5119",
+					"path": [
+						"api",
+						"v1",
+						"Sale"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST Cancel Sale",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "PATCH Update Sale",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "POST Authenticate",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "POST Product",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		}
+	]
+}

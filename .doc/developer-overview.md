@@ -241,3 +241,41 @@ var discount = DiscountCalculator.CalculateDiscount(quantity);
 - **Benefício:** Facilita o diagnóstico de erros pelo consumidor da API e melhora a experiência de integração.
 
 ---
+
+# Endpoints Disponíveis na API
+
+Abaixo estão listados todos os principais endpoints REST disponíveis na aplicação, organizados por controller, com uma breve explicação de cada um:
+
+## SaleController
+- `POST /api/v1/Sale` — Cria uma nova venda.
+- `GET /api/v1/Sale` — Lista vendas com paginação e filtros opcionais (cliente, produto).
+- `PATCH /api/v1/Sale/{saleId}/Update` — Atualiza parcialmente uma venda existente (itens, dados gerais).
+- `PATCH /api/v1/Sale/{saleId}/CancelItem` — Cancela itens específicos de uma venda.
+- `POST /api/v1/Sale/Cancel` — Cancela uma venda inteira.
+
+## ProductController
+- `POST /api/v1/Product` — Cria um novo produto.
+- `GET /api/v1/Product` — Lista produtos com paginação.
+
+## UsersController
+- `POST /api/v1/Users` — Cria um novo usuário.
+- `GET /api/v1/Users/{id}` — Busca um usuário pelo ID.
+- `DELETE /api/v1/Users/{id}` — Remove um usuário pelo ID.
+
+## AuthController
+- `POST /api/Auth` — Autentica um usuário e retorna um token JWT.
+
+---
+
+## Testes de API com Postman
+
+O projeto inclui o arquivo `Ambev.postman_collection.json`, que é uma coleção exportada do Postman contendo exemplos de requisições para todos os endpoints da API. Isso facilita:
+- Testar rapidamente todos os fluxos da aplicação.
+- Validar regras de negócio e autenticação.
+
+**Como usar:**
+1. Importe o arquivo `Ambev.postman_collection.json` no Postman.
+2. Ajuste as variáveis de ambiente (ex: URL base, tokens) conforme necessário.
+3. Execute as requisições e explore todos os recursos da API.
+
+---
